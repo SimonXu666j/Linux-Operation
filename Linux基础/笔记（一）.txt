@@ -1,0 +1,17 @@
+Linux版本：
+	* 内核版本 ：www.kernel.org  2.6.18
+	* 发行版本 ：redhat、ubuntu、CentOS
+
+
+
+开源软件：使用自有、研究自由、散步及改良自由
+Apache、Nginx作为网站服务器平台，Apache占用资源少，支持高并发
+
+Linux应用领域：
+	* 基于Linux的企业服务器
+	* 嵌入式应用
+
+
+
+Android 底层 Linux
+IOS  底层Unix
