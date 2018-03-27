@@ -1,0 +1,26 @@
+解决迭代陷阱，Python in Docker......
+DaoCloud分布构建系统DaoHub
+    Docker应用项目的镜像构建和持续集成
+	   全容器化解决方案
+	   缓存服务
+	   镜像同步
+	分布于全球4个数据中心
+	   由6个微服务组成
+Docker (简单理解：轻量级的虚拟机) Build,ship,and run any application,anywhere
+     Build:打包应用成容器
+	 Ship:把容器拉取到机器上
+	 Run:运行容器
+	 Any application:任何可以容器化的应用
+	 Anywhere:物理机，虚拟机，云主机 
+Python微服务的技术栈：
+      负载均衡  NGINX mitmproxy
+	  API     Flask Request
+	  监控    New Relic Sentry
+	  服务器  gunicorn
+	  应用分发 docker
+Docker的应用自包含：
+    Docker容器包含了应用运行所需的所有东西：
+	    操作系统
+		语言栈和框架
+		应用代码
+		自包含描述文件：Dockerfile吧

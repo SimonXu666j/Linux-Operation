@@ -1,0 +1,103 @@
+对Mesos和Marathon的安装官方文档有较详细的安装说明，但是英文的。
+我参照官方安装文档（https://open.mesosphere.com/getting-started/install/），在测试环境试装了一下，这里整理下安装配置的步骤。
+
+测试环境
+
+服务器IP       说明
+192.168.0.101 Master节点 
+192.168.0.102 Master节点 
+192.168.0.103 Master节点 
+192.168.0.104 Slave节点 
+192.168.0.105 Slave节点 
+192.168.0.106 Slave节点 
+
+我们通常采用多个master节点和多个slave节点来实现高可用。这里使用3个master节点来进行高可用配置，
+每个master节点上都运行mesos-master，marathon和提供选主机制的zookeeper服务。slave节点上只需要运行mesos-slave服务，
+后期如果需要添加slave节点，可以很容易的添加。为了简单，下面直接采用yum方式安装（除此之外，还可以采用编译安装）。
+
+Master节点安装和配置
+1 安装服务
+在所有的Master节点上执行下面的操作。
+
+1 rpm -Uvh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+2 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-mesosphere
+3 yum install mesos marathon mesosphere-zookeeper -y1
+
+2 zookeeper配置
+
+1）每个master节点设置不同的myid值 
+ 在/var/lib/zookeeper/myid中写入一个1到255范围的数值，需要注意的是，每个节点的myid不要重复。这里将3个master节点的myid分别设置为：1，2，3
+
+2）每个master节点设置zoo.cfg 
+在配置文件/etc/zookeeper/conf/zoo.cfg中加入下面内容：
+
+1 server.1=192.168.0.101:2888:3888
+2 server.2=192.168.0.102:2888:3888
+3 server.3=192.168.0.103:2888:38881
+
+3）启动zookeeper服务
+systemctl start zookeeper1
+
+
+3 mesos-master和marathon配置
+
+1）每个master节点的/etc/mesos/zk配置文件中设置zk的地址
+zk://192.168.0.101:2181,192.168.0.102:2181,192.168.0.103:2181/mesos1
+
+2）/etc/mesos-master/quorum中设置quorum值 
+ 这个值要大于master数/2，这里master数为3，则要设为2
+
+3）停掉mesos-slave
+
+1 systemctl stop mesos-slave.service
+2 systemctl disable mesos-slave.service1
+
+4）启动mesos-master marathon
+
+1 systemctl start mesos-master
+2 systemctl start marathon1
+
+Slave节点安装和配置
+
+1 安装服务
+
+在所有的Slave节点上执行下面的操作。
+
+1 rpm -Uvh http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+2 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-mesosphere
+3 yum install mesos -y1
+
+2 mesos-slave配置
+
+1）在/etc/mesos/zk中设置zk的地址 
+ 这里的zk地址就是master节点所使用的同一套zookeeper服务的地址。
+zk://192.168.0.101:2181,192.168.0.102:2181,192.168.0.103:2181/mesos1
+
+2）关闭mesos-master服务
+
+1 systemctl stop mesos-master.service
+2 systemctl disable mesos-master.service1
+
+3）启动mesos-slave服务
+systemctl start mesos-slave1
+
+按照以上的安装和配置，一个高可用的Mesos和Marathon服务就搭建完成了。可以通过http://:5050来访问Mesos的web界面，通过http://:8080来访问Marathon的web界面。可以是任意一个master节点的IP。
+
+最后提醒一下需要注意的是： 
+1）服务器的jdk要是1.8以上版本的，不然会有报错，因为marathon是要求jdk1.8以上的； 
+2）各节点配一下/etc/hosts或指向一个共用的DNS，确保相互能够访问。如果不想配hosts，在启动时指定–hostname为IP即可； 
+3）如果想在marathon上运行Docker，则需要一些额外的配置：
+
+1 //指定使用docker容器化
+2 echo 'docker,mesos' > /etc/mesos-slave/containerizers
+3 //考虑到拉取容器镜像等的操作，适当增加timeout的时间
+4 echo '5mins' > /etc/mesos-slave/executor_registration_timeout
+5 //重启mesos-slave以使上面配置生效
+6 systemctl restart mesos-slave1
+
+4）几个配置启动参数的目录： 
+/etc/mesos-master/ 
+/etc/mesos-slave/ 
+/etc/marathon/conf/ 
+在这些目录分别用来配置mesos-master，mesos-slave，marathon的启动参数。
+以参数名为文件名，参数值为文件内容即可。
