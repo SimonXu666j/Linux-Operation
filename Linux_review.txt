@@ -1,0 +1,32 @@
+1.Linux系统
+  Linux命令
+  SSH
+  WebServer：Apache Nginx
+  数据库：MySQL
+  缓存：Redis Memcached
+  必备服务：定时任务Crontab,日志切割logrotate,时间同步ntpdate,进程管理supervisor
+  编程语言：PHP,Python,Java
+2.Linux下一切皆文件，大小写区分。
+3.VmWare(或Oracle VirtualBox)虚拟机安装CentOS7。
+4.准备工作：查看IP（ifconfig, ip addr） 替换默认源（http://mirrors.163.com/.help/centos.html）
+5.ssh config，cd ~/.ssh;touch config  例子：
+               host "aideploy"
+                   HostName 10.70.187.50
+                   User aideploy
+                   Port 22
+6.SSH安全免密码登录：ssh key 使用非对称加密方式生成公钥和私钥。
+                    公钥可以对外公开，放在服务器的~/.ssh/authorized_keys
+                    linux生成ssh key命令：ssh-keygen -t rsa/dsa 
+7.修改ssh服务的端口：vim /etc/ssh/sshd_config
+8.Linux常用命令：软件操作命令、服务器硬件资源和磁盘操作、文件和文件夹操作命令、系统用户操作命令、防火墙相关设置、提权操作sudo和文件传输操作
+	软件包管理器：yum
+	安装：yum install xxx
+	卸载：yum remove xxx
+	搜索：yum search xxx
+	清理缓存：yum clean packages
+	列出已安装：yum list
+	软件包信息：yum info xxx
+	磁盘空间：df -h
+	内存：free -g        --补充：系统使用内存=Total -Free   应用使用内存=Total-(Free+Cached+Buffers)
+	负载:根据核数设定平均负载阀值，查看cpu核数命令  cat /proc/cpuinfo |grep "cores"|uniq
+	cpu:查看cpu个数命令  more /proc/cpuinfo |grep "physical id"|uniq|wc -l
