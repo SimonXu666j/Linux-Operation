@@ -30,3 +30,27 @@
 	内存：free -g        --补充：系统使用内存=Total -Free   应用使用内存=Total-(Free+Cached+Buffers)
 	负载:根据核数设定平均负载阀值，查看cpu核数命令  cat /proc/cpuinfo |grep "cores"|uniq
 	cpu:查看cpu个数命令  more /proc/cpuinfo |grep "physical id"|uniq|wc -l
+9.vim是把所有内容读到内存里面去的。
+10.grep命令
+11.find命令  find . -type f  查找类型是文件的
+             find . -type f -name "imooc" -exec rm {}\;    删除imooc文件
+12.防火墙设置
+       检查状态：service firewalld status
+       firewall-cmd --state
+       firewall-cmd --get-zones
+       firewall-cmd --get-default-zone
+       firewall-cmd --list-all-zone
+       firewall-cmd --zone=public
+       firewall-cmd --list-ports
+       firewall-cmd --query-service=ssh
+       firewall-cmd --remove-service=ssh
+       firewall-cmd --add-service=ssh
+       firewall-cmd --list-service
+       firewall-cmd --add-port=22/tcp
+       firewall-cmd --list-ports
+       firewall-cmd --remove-port=22/tcp
+13.提权（sudo visudo）和文件上传下载(wget curl scp)操作
+   提权：
+        执行visudo命令，修改配置文件/etc/sudoers
+        插入   %user ALL=(ALL)     ALL
+   文件上传下载：rz sz 命令          yum install lrzsz   --安装rz sz工具
