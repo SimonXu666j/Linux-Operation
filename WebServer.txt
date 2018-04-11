@@ -1,0 +1,103 @@
+Apache
+基本操作：
+   安装  yum install httpd
+   启动  service httpd start
+   停止  service httpd stop
+netstat -anpl|grep 'http'     --anpl参数可用查看对应服务的监听情况
+1.虚拟主机配置
+cd /etc/httpd/conf
+vim httpd.conf
+在# virtual host being defined.后面插入配置
+<VirtualHost *:80>
+	ServerName www.imooc.test
+	DocumentRoot /data/www
+	<Directory "/data/www/index.html">
+    	Options Indexes FollowSymLinks
+    	AllowOverride none
+    	Require all granted
+	</Directory>
+</VirtualHost>
+配置完之后重启httpd服务
+ systemctl status httpd.service     --查看httpd启动失败的日志
+ 上述配置完成之后如果仍未访问到虚拟主机配置的HTML文件，查看Apache的error_log，查看原因，发现报错AH00035: access to /index.html denied (filesystem path '/data/www/index.html') because search permiss
+ions are missing on a component of the path
+使用 httpd 访问时，如果遇到标题描述的问题：
+”because search permissions are missing on a component of the path“
+解决办法：
+请关闭 SElinux 试下
+# setenforce 0  
+打开SElinux命令setenforce 1
+永久关闭SElinux：vi /etc/selinux/config
+
+2.伪静态
+修改配置文件
+cd /etc/httpd/conf
+vim httpd.conf
+在# LoadModule foo_module modules/mod_foo.so后面插入
+LoadModule rewrite_module modules/mod_rewrite.so
+配置伪静态规则
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteRule ^(.*).htmp$ index.html   --此处的伪静态规则是将以,htmp结尾的全部转换成inde.html，这样的话直接访问http://www.imooc.test/index.htmp可以自动转换成http://www.imooc.test/index.html
+</IfModule>
+
+3.windows下hosts的文件位置
+C:\Windows\System32\drivers\etc
+
+
+
+Nginx
+基本操作：
+   安装  yum install nginx
+   启动  service nginx start
+   停止  service nginx stop
+   重载  service nginx reload
+centos7默认没有nginx的yum源，需要添加
+然后通过rpm 添加yum源
+rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+
+1.虚拟主机
+2.多域名、多端口
+3.伪静态
+实现虚拟主机、多域名、多端口、伪静态
+cd /etc/nginx/conf.d
+cp default.conf imooc.conf 
+vi imooc.conf 
+server {
+    #多端口
+    listen       80;
+    listen       9999;
+    #多域名
+    server_name  www.imooc.test www.imooc.test1;
+    location / {
+        root   /data/www;
+        index  index.html index.htm;
+        #配置伪静态
+        rewrite ^(.*)\.htmp$  /index.html;
+    }
+}
+
+4.日志格式化
+通过修改nginx.conf配置进行日志格式化：log_format
+对不同的虚拟主机可以在其配置文件里面指定日志输出的目录和日志名称，如在imooc.conf里面加 access_log /var/log/nginx/access_imooc.log imooc;
+
+5.反向代理和负载均衡
+http://www.ip138.com/      --查找域名对应ip的网站
+反向代理：两台服务器，一台nginx 一台web应用，用户请求先到nginx，nginx再把请求给web应用服务器，这样的过程
+upstream imooc_hosts{
+	server ip:port;
+}
+proxy_set_header Host 域名;
+proxy_pass http://ip:port；
+负载均衡：多台机器一起承载用户的访问请求
+upstream imooc_hosts{	
+	server ip1:port weight=5;
+	server ip2:port weight=1;
+}
+proxy_set_header Host 域名;
+proxy_pass http://imooc_hosts;	
+
+6.调试技巧
+在配置文件imooc.conf中加例如如下内容进行nginx的调试：
+add_header Content-Type "text/plain;charset=utf-8";
+return 200 "$http_host";
