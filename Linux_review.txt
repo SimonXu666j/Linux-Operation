@@ -8,7 +8,7 @@
   编程语言：PHP,Python,Java
 2.Linux下一切皆文件，大小写区分。
 3.VmWare(或Oracle VirtualBox)虚拟机安装CentOS7。
-4.准备工作：查看IP（ifconfig, ip addr） 替换默认源（http://mirrors.163.com/.help/centos.html）
+4.准备工作：查看IP（ifconfig, ip addr） 替换默认源（http://mirrors.163.com/.help/centos.html）  yum repolist  --查看当前系统有效的repolist
 5.ssh config，cd ~/.ssh;touch config  例子：
                host "aideploy"
                    HostName 10.70.187.50
@@ -35,6 +35,10 @@
 11.find命令  find . -type f  查找类型是文件的
              find . -type f -name "imooc" -exec rm {}\;    删除imooc文件
 12.防火墙设置
+安装：：yum install firewalld
+启动：service firewalld start
+检查状态：service firewall status
+关闭或禁用防火墙：service firewall stop/disable
        检查状态：service firewalld status
        firewall-cmd --state
        firewall-cmd --get-zones
