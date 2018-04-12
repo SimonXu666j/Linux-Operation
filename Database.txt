@@ -1,0 +1,80 @@
+MySQL
+安装服务端  yum install mysql-community-server
+启动   service mysqld start/restart
+停止   service mysqld stop
+
+MySQL安装：
+CentOS7默认安装mariadb数据库
+  yum remove mariadb-libs.x86_64
+ 下载Mysql源
+ https://dev.mysql.com/downloads/repo/yum
+ 安装源
+ yum localinstall mysql57-community-release-el7-11.noarch.rpm
+ 安装MySQL
+ yum install mysql-community-server
+ 默认密码
+ cat /var/log/mysqld.log|grep "password"
+
+如果MySQL数据库用户的密码设置过于简单，数据库在用户登录后会提示重置密码，并且不接受简单的密码。
+提示需要重置密码：
+ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.
+重置密码：
+set password="simon"    --报错密码不符合规范
+注意：如果只想设置简单密码需要修改两个全局参数：
+mysql> set global validate_password_policy=0;
+mysql> set global validate_password_length=1;
+登陆命令：mysql -h"IP" -u"username" -p"password";
+查看有哪些数据库：show databases;
+使用哪个数据库：use mysql;
+查看有哪些表：show tables;
+格式化显示有哪些字段：select * from user\G;
+
+
+
+扩展知识     --在5.7.21的版本下调试结果
+远程连接
+开启远程连接步骤：
+1.update user set host = "%" where Host = "localhost" and User = "root";       --开启权限
+2.flush privileges;      --刷新权限    或者  service mysqld restart   
+3.service firewalld stop    --关闭防火墙
+
+开启Genelog     --记录数据库的所有操作语句
+set global general_log_file="/tmp/general.log";
+set gloabl general_log=on;
+
+新建用户和权限操作
+create user 'imooc'@'%' identified by '123456';
+grant all privileges on *.* to 'imooc'@'%' identified by '123456' with grant option;      --赋予全部的权限，*.*意思是任意库任意表
+flush privileges; 
+grant select,insert,update,delete on *.* to 'imooc'@'%' identified by '123456' with grant option;   --赋予指定权限, with grant option的作用是用户可以将得到的权限授权另外一个用户: 
+revoke all privileges on *.* from imooc;      --收回权限,如果用户有with grant option的权限，则撤销不了该用户之前赋予的权限
+
+查看用户权限：
+show grants for username;
+
+删除用户：
+drop user 'username'@'host';
+
+忘记root密码怎么办
+在 /etc/my.cnf 加入 skip-grant-tables
+use mysql;
+update user set authentication_string=password('456789') where user='root';
+
+
+MySQL客户端工具
+SQLog
+Navicat
+HeidiSQL
+Seqqual Pro
+phpMyadmin
+
+
+Mysql查看版本号的五种方式：
+1使用命令行模式进入mysql会看到最开始的提示符 
+2.命令行中使用status可以看到 
+mysql> status; 
+3.使用系统函数 
+mysql> select version(); 
+4. mysql --help | grep Distrib 
+5.包管理工具（根据不同系统 rh系列或则是bsd系列） 
+rpm -qa|grep mysql 
