@@ -1,0 +1,27 @@
+缓存服务
+Memcached
+安装  yum install memcached
+启动  memcached -d -l -m -p       -d参数是以守护进程的形式启动，-l是监听哪些ip地址，-m是启动内存，-p端口号（默认监听端口11211）
+停止  kill pid
+内存数据的好处：可以自动过期
+
+Redis
+安装   源码编译安装
+       yum install gcc
+	   make malloc = libc
+	   sudo make install
+
+启动   redis-server start/restart      默认监听端口6379
+       cd src && ls
+       redis-server     Redis服务器端启动程序 
+       redis-cli        Redis客户端操作工具。也可以用telnet根据其纯文本协议来操作
+       redis-benchmark  Redis性能测试工具 
+       redis-check-aof  数据修复工具
+       redis-check-dump 检查导出工具
+
+停止   redis-server stop
+客户端 redis-client
+Redis拓展知识
+Redis不仅仅支持简单的k/v类型的数据，同时还提供list,set,hash等数据结构的存储
+Redis支持数据的备份，即master-slave模式的数据备份
+Redis支持数据的持久化，可以将内存中的数据保持在硬盘中，重启的时候可以再次加载进行使用
