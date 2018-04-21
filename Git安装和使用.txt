@@ -1,0 +1,30 @@
+Git常用命令
+git config 
+git clone
+git fetch
+git rebase
+git init
+git remote
+git commit
+git push
+
+推荐学习Git基本命令网址：http://www.runoob.com/git/git-tutorial.html  
+
+1 ： 安装
+sudo yum install  git
+2：生成SSH KEY
+ssh-keygen
+3：访问码云（https://gitee.com），配置SSH Key
+4：基本命令
+5：命令自动补全
+5.1. 下载源码 使用下载源码中的 git-completion.bash 自动补全命令的文件（如果无法下载请到慕课课程群中下载）
+	git clone git@github.com:git/git.git
+5.2 复制 git-completion.bash 文件
+	cp contrib/completion/git-completion.bash /etc/bash_completion.d/
+5.3 加载 bash 脚本
+	source /etc/bash_completion.d/git-completion.bash
+5.4 自动加载脚本，编辑~/.bash_profile
+	# Git bash autoload
+if [ -f /etc/bash_completion.d/git-completion.bash ]; then
+source /etc/bash_completion.d/git-completion.bash
+fi
