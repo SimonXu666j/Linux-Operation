@@ -1,0 +1,46 @@
+crontab：定时任务
+
+Ntpdate：日期同步
+时间同步方法
+同步命令
+# ntpdate ntp服务器域名或ＩＰ
+例如：# ntpdate 1.cn.pool.ntp.org
+http://www.pool.ntp.org是NTP的官方网站,在这上面我们可以找到离我们国家的NTP Server cn.pool.ntp.org.它有3个服务器地址：
+服务器一：        1.cn.pool.ntp.org
+服务器二：        2.asia.pool.ntp.org
+服务器三：        3.asia.pool.ntp.org
+时区设置的配置文件：
+[simon@192 etc]$ ll /etc/localtime
+lrwxrwxrwx. 1 root root 35 Apr  4 00:27 /etc/localtime -> ../usr/share/zoneinfo/Asia/Shanghai
+
+Logrotate：日志切割
+/etc/logrotate.d
+
+supervisor：进程管理
+
+Supervisor安装与配置
+pip install supervisor
+
+mkdir /etc/supervisor
+生成supervisor的初始化配置文件
+echo_supervisord_conf >/etc/supervisor/supervisord.conf
+
+配置管理进程
+vi supervisor.conf
+修改supervisor.conf配置文件
+[include]
+files = /etc/supervisor/conf.d/*.ini
+
+配置redis服务
+cd /etc/supervisor/conf.d
+vi redis.ini
+[program:redis]
+command=/usr/local/bin/redis-server
+autostart=true
+autorestart=true
+startsecs=3
+
+启动supervisord服务
+supervisord -c /etc/supervisor/supervisord.conf
+交互终端
+supervisorctl
