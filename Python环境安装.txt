@@ -1,0 +1,42 @@
+软件包管理工具：pip
+虚拟环境：virtualenv
+模块安装：pip install
+
+Python& flask运行环境配置
+1 ： pip安装
+sudo yum  install python2-pip
+sudo yum clean all
+	
+2：pip 换成豆瓣源
+	mkdir ~/ .pip
+	vim ~/ .pip/pip.conf
+	[global]
+timeout = 60
+index-url = https://pypi.doubanio.com/simple
+3：python 虚拟环境安装
+pip install virtualenv
+4：基本命令
+	virtualenv imooc
+	source imooc/bin/active
+5：Flask 
+	pip  install  -i  https://pypi.doubanio.com/simple/  --trusted-host pypi.doubanio.com  flask
+
+nginx做flask web的反向代理配置python.conf
+server {
+    listen       80;
+    server_name  python.imooc.test;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+    }
+}
+index.py
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
