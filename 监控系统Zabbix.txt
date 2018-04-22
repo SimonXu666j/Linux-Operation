@@ -1,0 +1,74 @@
+运行环境：LNMP
+linux+nginx+mysql+php
+Zabbix下载地址：
+https://repo.zabbix.com/zabbix
+安装源：
+rpm -ivh https://repo.zabbix.com/zabbix/3.5/rhel/7/x86_64/zabbix-release-3.5-1.el7.noarch.rpm
+安装服务端：
+yum install zabbix-server-mysql zabbix-web-mysql
+安装客户端：
+yum install zabbix-agent
+
+创建数据库
+mysql -uroot -psimon
+create database zabbix;
+
+导入sql到zabbix数据库
+cd /usr/share/doc/zabbix-server-mysql-4.0.0
+zcat create.sql.gz |mysql -uroot -p zabbix
+
+启动zabbix服务
+cd /etc/zabbix
+配置zabbix服务
+vi zabbix_server.conf
+启动
+service zabbix-server start
+
+zabbix默认与httpd服务结合在一起
+cd /etc/httpd/conf.d   目录下有zabbix.conf
+
+zabbix的web服务与nginx结合
+cd /etc/nginx/conf.d
+vi zabbix.conf
+server {
+    listen       80;
+    server_name  zabbix.imooc.test;
+    root /usr/share/zabbix;
+    index index.php index.html;
+    access_log /var/log/nginx/access_zabbix.log zabbix;
+
+    location / {
+       try_files $uri $uri/ /index.php?$args;
+    }
+    location ~ \.php${
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        try_files $uri =404;
+  }
+}
+重启nginx
+service nginx restart
+启动php-fpm
+service php-fpm start
+本地hosts配置域名
+192.168.1.9 zabbix.imooc.test
+访问网页安装zabbix web
+修改配置文件
+vi /etc/php.ini
+插入
+date.timezone = Asia/Shanghai
+post_max_siez = 32M
+max_execution_time = 300
+max_input_time = 300
+
+always_populate_raw_post_date=-1  打开
+重启php-fpm
+
+zabbix web的默认用户名是admin 密码是zabbix
+
+zabbix的英文界面改中文
+vi /usr/share/zabbix/include/locales.inc.php
+第55行打开中文
+
+zabbix中文乱码解决方案
