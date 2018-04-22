@@ -1,0 +1,24 @@
+Java运行环境配置
+Java安装
+sudo yum -y install java-1.8.0-openjdk*
+Tomcat安装
+官网： http://tomcat.apache.org/ 
+Tomcat9下载地址： http://apache.fayea.com/tomcat/tomcat-9/
+Maven安装
+官网： http://maven.apache.org/
+Maven下载地址： http://mirror.bit.edu.cn/apache/maven/maven-3
+maven用来管理依赖和打包代码
+
+
+
+Tomcat和Nginx配合
+用nginx做tomcat反向代理，在/etc/nginx/conf.d目录下新增配置java.conf
+server {
+    listen       80;
+    server_name  java.imooc.test;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+    }
+}
+启动nginx服务，nginx将web请求转发给tomcat服务
